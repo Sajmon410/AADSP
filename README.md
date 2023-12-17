@@ -1,12 +1,12 @@
 # AADSP
-1.	 Opis zadatka
+**1.	 Opis zadatka**
 
 -Realizacija projektnog zadatka zasnovana je na implementaciji kombinovanja kanala na osnovu date šeme i tabele. Sam zadatak se sastoji iz implementacije 4 modela, modela 0 1 2 i 3. Model 0 1 i 2 je bilo potrebno implementirati u Visual Studi-u dok je model 3 i finalni model bilo potrebno implementirati u Clideu-u.
 Model 0 je referentni model koji sadrži osnovnu implementaciju šeme. Model 1 je sličan modelu 0 samo što je malo optimizovaniji. Razlika izlaza iz modela 0 i 1 mora biti 0 bita. Model 2 je realizovan prelazak iz floating point u fix point arhitekturu, gde je dozvoljena razlika u odnosu na ostale modele  1 do 2 bita. Poslednji korak nam je model3 i on predstavlja potpuni prelazak na ciljnu arhitekturu. 
  ![image](https://github.com/Sajmon410/AADSP/assets/120813343/459c709b-2734-4d99-a02a-ae2328a5917f)
 
 
-2.	Opis realizacije
+**2.	Opis realizacije**
 
 Model0 je implementiran bez obaziranja na potrošnju memoirje i bilo kakve optimizacije vezane za ciljnu arhitekturu. Inverter efekat je primenjen u odvojenom fajlu inverter.cpp (inverter.h) gde se nalazi funkcija za inicijalizaciju kao i funckija za transformaciju.
 Na slici ispod predstavljen je jedan od izlaza modela 0, gde se konkretno radi o funky_sample.wav.
@@ -51,7 +51,7 @@ Funckija gainProcessing je implementirana kao I funckije za inicijalizaciju I in
 
 
 
-3.	Ispitivanje I verifikacija
+**3.	Ispitivanje I verifikacija**
 
 Ispitivanje je vršeno pomoću skripte koja je data na vežbama. Testirana su 3 signala funky_sample.wav 
 speech_2ch.wav Tone_L1k_R3k.wav. Parametri koji su prosleđivani su enable gain i mode. Izlaz skripte dat je u test_outputs folderu. 
