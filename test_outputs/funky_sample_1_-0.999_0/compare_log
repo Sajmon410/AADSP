@@ -1,0 +1,10 @@
+"C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\Tools\PCMCompare.exe" -b16 "C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\test_outputs\funky_sample_1_-0.999_0\out_funky_sample_1_-0.999_0_model0.wav" "C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\test_outputs\funky_sample_1_-0.999_0\out_funky_sample_1_-0.999_0_model1.wav"
+      No differences encountered!
+
+      No differences encountered!
+
+"C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\Tools\PCMCompare.exe" -b16 "C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\test_outputs\funky_sample_1_-0.999_0\out_funky_sample_1_-0.999_0_model1.wav" "C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\test_outputs\funky_sample_1_-0.999_0\out_funky_sample_1_-0.999_0_model2.wav"
+      No differences encountered!
+
+      No differences encountered!
+

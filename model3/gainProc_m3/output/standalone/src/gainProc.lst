@@ -1,0 +1,175 @@
+1     	 0000				_GAINPROC_ASM
+2     						
+3     							.if defined (_GAINPROC_ASM)
+4     						
+5     	 0002				_INPUT_NUM_CHANNELS .equ 2
+6     	 0000				_LEFT_CH .equ 0
+7     	 0001				_RIGHT_CH .equ 1
+8     	 0002				_LEFTS_CH .equ 2
+9     	 0003				_RIGHTS_CH .equ 3
+10    	 0010				_BLOCK_SIZE .equ 16
+11    						
+12    	 0001				_degree .equ 1
+13    	 0002				_gain .equ 2
+14    						
+15    	 0000					.public _gainProcessing
+16    	 0000					.public _gst_audio_invert_transform
+17    	 0000					.public _audio_invert_init
+18    	 0000					.extern _inputGain
+19    	 0000					.extern _variablesGain
+20    	 0000					.extern _limiterThreshold
+21    	 0000					.extern _mode
+22    	 0000					.extern _inverter
+23    						
+24    							
+25    							.code_ovly
+25     >> start of macro: .code_ovly
+1+    									seg_single , "CODE_OVLY", CODE
+1+     >> start of macro: seg_single
+1+    						  .if ( "" != "" ) & defined( ___SegStart_CODE_ )
+2+    						    segment
+3+    						  .else
+4+    						    segment "CODE_OVLY"
+5+    							.if "" != ""
+6+    						___SegStart_CODE_
+7+    							.endif
+8+    						  .endif
+9+    							#RememberSegmentType
+10+    >> end of macro: seg_single
+2+     >> end of macro: .code_ovly
+26    						#CCC2
+27    						# i0 - pIn
+28    						# i1 - pOut
+29    	 0000				_gainProcessing:
+30    	 0000	 B2D40017		ymem[i7]=i2;i7+=1
+31    	 0001	 B3D40017		ymem[i7]=i3;i7+=1
+32    							
+33    	 0002	 81000014		do(_BLOCK_SIZE),>loop
+34    	 0003	 81040000			x1=xmem[_inputGain]
+35    	 0004	 84050000			i4=i0+(_LEFT_CH*_BLOCK_SIZE)
+36    	 0005	 80940000			x0=ymem[i0]	
+37    	 0006	 00007FFF			nop
+38    	 0007	 00002080			a0=x0*x1
+39    	 0008	 00007FFF			nop
+40    	 0009	 84150000			i4=i1+(_LEFT_CH*_BLOCK_SIZE)
+41    	 000A	 88D40004			ymem[i4]=a0
+42    								
+43    								#i4=i1+(_LEFTS_CH*_BLOCK_SIZE)
+44    								#ymem[i4]=a0
+45    								
+46    	 000B	 84050010			i4=i0+(_RIGHT_CH*_BLOCK_SIZE)
+47    	 000C	 00007FFF			nop
+48    	 000D	 80940004			x0=ymem[i4]
+49    	 000E	 00007FFF			nop
+50    	 000F	 00002080			a0=x0*x1
+51    	 0010	 00007FFF			nop
+52    	 0011	 84150010			i4=i1+(_RIGHT_CH*_BLOCK_SIZE)
+53    	 0012	 88D40004			ymem[i4]=a0
+54    								
+55    								#i4=i1+(_RIGHTS_CH*_BLOCK_SIZE)
+56    								#ymem[i4]=a0
+57    	 0013	 81150001			i1=i1+1
+58    	 0014	 00007FFF	%loop:	nop
+59    	 0015	 88040000			a0=xmem[_mode]
+60    	 0016	 00004E80			a0 & a0
+61    	 0017	 84480024			if(a!=0)jmp>mode_not_zero
+62    								
+63    	 0018	 82050010			i2=i0+(_RIGHT_CH*_BLOCK_SIZE)
+64    	 0019	 83150010			i3=i1+(_RIGHT_CH*_BLOCK_SIZE)
+65    	 001A	 B0090031			i1=i0
+66    	 001B	 B04A0000			i0=(_inverter)
+67    	 001C	 B3090038			i4=i3
+68    	 001D	 8088002D			call _gst_audio_invert_transform
+69    								
+70    	 001E	 82050000			i2=i0+(_LEFT_CH*_BLOCK_SIZE)
+71    	 001F	 83150000			i3=i1+(_LEFT_CH*_BLOCK_SIZE)
+72    	 0020	 B0090031			i1=i0
+73    	 0021	 B04A0000			i0=(_inverter)
+74    	 0022	 B3090038			i4=i3
+75    	 0023	 8088002D			call _gst_audio_invert_transform
+76    								#ptrInL = *(pIn + LEFT_CH);
+77    								#ptrOutL = *(pOut + LEFT_CH);
+78    								#ptrInR = *(pIn + RIGHT_CH);
+79    								#ptrOutR = *(pOut + RIGHT_CH);
+80    								#gst_audio_invert_transform(&inverter, ptrInL, ptrOutL);
+81    								#gst_audio_invert_transform(&inverter, ptrInR, ptrOutR);
+82    								#i0 pokazivac na inverter
+83    								#i1 ulazni bafer
+84    								#i2 izlazni bafer
+85    	 0024				%mode_not_zero:
+86    	 0024	 02177FFF		i7-=1
+87    	 0025	 B3940027		i3=ymem[i7];i7-=1
+88    	 0026	 B2940007		i2=ymem[i7]
+89    	 0027	 81880000		ret
+90    							
+91    	 0028				_audio_invert_init:
+92    	 0028	 81050001		i1=i0+_degree
+93    	 0029	 88D40001		ymem[i1]=a0
+94    	 002A	 81050002		i1=i0+_gain
+95    	 002B	 89D40001		ymem[i1]=a1
+96    	 002C	 81880000		ret
+97    	 002D				_gst_audio_invert_transform:
+98    							#i0=inverter
+99    							#i1=input
+100   							#i4=output
+101   							
+102   	 002D	 887A7FFF		a0=(0x7fff)
+103   	 002E	 85050001		i5=i0+_degree
+104   	 002F	 8C940005		b0=ymem[i5]
+105   	 0030	 00004460		a0=a0-b0
+106   	 0031	 8100003C		do(_BLOCK_SIZE),>loop
+107   	 0032	 00004461			a1=a0-b0
+108   	 0033	 80940001			x0=ymem[i1]
+109   	 0034	 49447FFF			y0=a1
+110   	 0035	 00002401			a1=x0*y0
+111   	 0036	 49407FFF			x0=a1
+112   	 0037	 85050002			i5=i0+_gain
+113   	 0038	 84940005			y0=ymem[i5]
+114   	 0039	 00002401			a1=x0*y0
+115   	 003A	 89D40004			ymem[i4]=a1
+116   							
+117   	 003B	 81150001			i1=i1+1
+118   	 003C	 84450001	%loop:	i4=i4+1	
+119   	 003D	 81880000		ret
+120   							.endif
+121   						(null)
+				 SYMBOL TABLE 
+
+    Name                                                                                    Type                  Value 
+
+_BLOCK_SIZE                                                                     					 Number				          16 (10H)
+_COMMON_INC_PATH_                                                               					 Define                 "C:/CirrusDSP/crystal32/common/inc/"
+_DSP_                                                                           					 Define                 "a"
+_GAINPROC_ASM                                                                   			  Unused Relocatable        __INIT:0000H
+_INPUT_NUM_CHANNELS                                                             			  Unused Number				      2 (2H)
+_LEFTS_CH                                                                       			  Unused Number				      2 (2H)
+_LEFT_CH                                                                        					 Number				         0 (0H)
+_LOCAL_INC_PATH_                                                                					 Define                 "inc/"
+_LOCAL_SRC_PATH_                                                                					 Define                 "src/"
+_MUI_VERSION_                                                                   					 Define                 "020000"
+_OVLY_                                                                          					 Define                 "standalone"
+_OVLY_REVISION_                                                                 					 Define                 "020000"
+_RIGHTS_CH                                                                      			  Unused Number				      3 (3H)
+_RIGHT_CH                                                                       					 Number				          1 (1H)
+_ROUTER_INC_PATH_                                                               					 Define                 "rom_inc/"
+_SLOT_                                                                          					 Define                 "0"
+_TARGET_FAMILY_                                                                 					 Define                 "crystal32"
+_TOOLS_VERSION_                                                                 					 Define                 "0x0701"
+_VERSION_                                                                       					 Define                 "00"
+__CASM_VER__                                                                    			  Unused Variable		        0 (701H)
+_audio_invert_init                                                              			  Public Relocatable       gainProc_GEN_0000:0028H
+_degree                                                                         					 Number				          1 (1H)
+_gain                                                                           					 Number				          2 (2H)
+_gainProcessing                                                                 			  Public Relocatable       gainProc_GEN_0000:0000H
+_gst_audio_invert_transform                                                     			  Public Relocatable       gainProc_GEN_0000:002DH
+_inputGain                                                                      					 External   
+_inverter                                                                       					 External   
+_limiterThreshold                                                               					 External   
+_mode                                                                           					 External   
+_variablesGain                                                                  					 External   
+
+	       SEGMENTS:
+
+Size			  Name										 Class
+0000H	 __INIT                                  			 CODE                                    
+003EH	 gainProc_GEN_0000                       			 CODE_OVLY                               

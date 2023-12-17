@@ -1,0 +1,17 @@
+"C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\Tools\PCMCompare.exe" -b16 "C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\test_outputs\Tone_L1k_R3k_1_-0.999_1\out_Tone_L1k_R3k_1_-0.999_1_model0.wav" "C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\test_outputs\Tone_L1k_R3k_1_-0.999_1\out_Tone_L1k_R3k_1_-0.999_1_model1.wav"
+      No differences encountered!
+
+      No differences encountered!
+
+"C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\Tools\PCMCompare.exe" -b16 "C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\test_outputs\Tone_L1k_R3k_1_-0.999_1\out_Tone_L1k_R3k_1_-0.999_1_model1.wav" "C:\Users\Simon\Desktop\DSP\Projekat\multitapEcho\test_outputs\Tone_L1k_R3k_1_-0.999_1\out_Tone_L1k_R3k_1_-0.999_1_model2.wav"
+    Max difference is 1 (1 bits, -144.49dB)
+    5760000 samples compared 
+   -----------------------------------------------------------
+    Dif(bits) |    Samples    |   PERCENT  |   First dif
+   -----------------------------------------------------------
+         1    |      10080    |    0.18%   |  0x005144cc   
+   -----------------------------------------------------------
+      Error   |      10080    |    0.18%              
+
+    Max difference is 1 (1 bits, -144.49dB)
+

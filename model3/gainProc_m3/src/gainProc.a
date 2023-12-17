@@ -1,0 +1,132 @@
+_GAINPROC_ASM
+
+	.if defined (_GAINPROC_ASM)
+
+_INPUT_NUM_CHANNELS .equ 2
+_LEFT_CH .equ 0
+_RIGHT_CH .equ 1
+_LEFTS_CH .equ 2
+_RIGHTS_CH .equ 3
+_BLOCK_SIZE .equ 16
+
+_degree .equ 1
+_gain .equ 2
+
+	.public _gainProcessing
+	.public _gst_audio_invert_transform
+	.public _audio_invert_init
+	.extern _inputGain
+	.extern _variablesGain
+	.extern _limiterThreshold
+	.extern _mode
+	.extern _inverter
+
+	
+	.code_ovly
+#CCC2
+# i0 - pIn
+# i1 - pOut
+_gainProcessing:
+	ymem[i7]=i2;i7+=1
+	ymem[i7]=i3;i7+=1
+	
+	do(_BLOCK_SIZE),>loop
+		x1=xmem[_inputGain]
+		i4=i0+(_LEFT_CH*_BLOCK_SIZE)
+		x0=ymem[i0]	
+		nop
+		a0=x0*x1
+		nop
+		i4=i1+(_LEFT_CH*_BLOCK_SIZE)
+		ymem[i4]=a0
+		
+		i4=i1+(_LEFTS_CH*_BLOCK_SIZE)
+		ymem[i4]=a0
+		
+		i4=i0+(_RIGHT_CH*_BLOCK_SIZE)
+		nop
+		x0=ymem[i4]
+		nop
+		a0=x0*x1
+		nop
+		i4=i1+(_RIGHT_CH*_BLOCK_SIZE)
+		ymem[i4]=a0
+		
+		i4=i1+(_RIGHTS_CH*_BLOCK_SIZE)
+		ymem[i4]=a0
+		i1=i1+1
+%loop:	nop
+		a0=xmem[_mode]
+		a0 & a0
+		if(a!=0)jmp>mode_not_zero
+		
+		i2=i0+(_RIGHT_CH*_BLOCK_SIZE)
+		i3=i1+(_RIGHT_CH*_BLOCK_SIZE)
+		i1=i0
+		i0=(_inverter)
+		i4=i3
+		call _gst_audio_invert_transform
+		
+		i2=i0+(_LEFT_CH*_BLOCK_SIZE)
+		i3=i1+(_LEFT_CH*_BLOCK_SIZE)
+		i1=i0
+		i0=(_inverter)
+		i4=i3
+		call _gst_audio_invert_transform
+		#ptrInL = *(pIn + LEFT_CH);
+		#ptrOutL = *(pOut + LEFT_CH);
+		#ptrInR = *(pIn + RIGHT_CH);
+		#ptrOutR = *(pOut + RIGHT_CH);
+		#gst_audio_invert_transform(&inverter, ptrInL, ptrOutL);
+		#gst_audio_invert_transform(&inverter, ptrInR, ptrOutR);
+		#i0 pokazivac na inverter
+		#i1 ulazni bafer
+		#i2 izlazni bafer
+%mode_not_zero:
+	i7-=1
+	i3=ymem[i7];i7-=1
+	i2=ymem[i7]
+	ret
+	
+_audio_invert_init:
+	# i0=data
+	# a0=degree
+	# a1=gain
+	#	data->degree=degree;
+	i1=i0+_degree
+	ymem[i1]=a0
+	#	data->gain=gain 
+	i1=i0+_gain
+	ymem[i1]=a1
+	ret
+_gst_audio_invert_transform:
+	#i0=inverter
+	#i1=input
+	#i4=output
+	#DSPfrat dry = FRACT_NUM(1.0) - data->degree;
+	a0=(0x7fff) 	#a0=FRACT_NUM(1.0)=1
+	#b0=data->degree
+	i5=i0+_degree
+	b0=ymem[i5]		# b0=data->degree=0.7
+	a0=a0-b0		# a0=dry = 0.3
+	#for(i=0;i<BLOCK_SIZE;i++){
+	do(_BLOCK_SIZE),>loop
+		#val=dry-data->degree;
+		a1=a0-b0
+		
+		#val =*inputPtr*val
+		x0=ymem[i1] 	#x0=*inputPtr
+		y0=a1			#y0=val
+		a1=x0*y0		#a1=val
+		# *outputPtr = val*data->gain
+		x0=a1
+		i5=i0+_gain
+		y0=ymem[i5]		#y0=data->gain
+		a1=x0*y0
+		ymem[i4]=a1
+		#inputPtr++;
+		#outputPtr++;
+		i1=i1+1
+%loop:	i4=i4+1	
+	ret
+	.endif
